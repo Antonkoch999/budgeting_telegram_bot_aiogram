@@ -1,12 +1,32 @@
 """Constant."""
 
-API_TOKEN = "1682362545:AAE47v5ztsOOu6M3h2Z9Gb8cc2C2Qi8Tty0"
-
-COMMANDS = {
+HELP_COMMANDS = {
     '/start': 'Начало работы с ботом.',
     '/help': 'Просмотр меню.',
     '/new': 'Сделать новую запись.',
-    '/show': 'Показать сумму расходов.',
-    '/history': 'Показать историю расходов.',
-    '/cancel': 'Выйти из программы.',
 }
+
+START_COMMANDS = {
+    '/new': 'Сделать новую запись.',
+}
+
+USER_KEY_BOARD_LIST = ['Кристина', 'Антон']
+INCOME_AND_EXPENSE_LIST = ['Доход', 'Расход']
+CATEGORY_INCOME_LIST = ['Зарплата', 'ИП', 'Hermes', 'Другое', 'Пособие']
+CATEGORY_EXPENSE_LIST = [
+    'Ребенок',
+    'Машина',
+    'Лечение',
+    'Продукты',
+    'Fast-Food',
+    'Кредиты',
+    'Хоз.нужды',
+    'Коммунальные услуги, связь',
+    'Досуг',
+    'Одежда',
+    'Подарки',
+]
+USER_IDS = {333252589: "Кристина", 409501763: "Антон"}
+TEXT_FOR_BUTTON_BACK = 'Назад'
+TEXT_FOR_BUTTON_CANCEL = 'Отмена'
+ANSWER_NEW_ENTRY = 'Как вас зовут?'

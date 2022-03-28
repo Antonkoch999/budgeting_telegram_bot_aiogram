@@ -9,9 +9,10 @@ from aiogram import Bot, Dispatcher
 from aiogram.types import BotCommand
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
-from aiogram_modul.constants import COMMANDS
+from aiogram_modul.constants import HELP_COMMANDS, USER_IDS
+from aiogram_modul.middlewares import AccessMiddleware
 from aiogram_modul.new_entry import register_handlers_budgeting
-from aiogram_modul.common import register_handlers_common
+from aiogram_modul.base_command import register_handlers_common
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +20,7 @@ logger = logging.getLogger(__name__)
 async def set_commands(bot: Bot):
     """Set commands for run dot."""
     command_list = []
-    for command, description in COMMANDS.items():
+    for command, description in HELP_COMMANDS.items():
         command_list.append(
             BotCommand(command=command, description=description)
         )
@@ -33,15 +34,15 @@ async def main():
         level=logging.INFO,
         format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
     )
-    logger.error("Starting bot")
 
     # Declaring and initializing bot and dispatcher objects
-    bot_token = getenv("BOT_TOKEN")
+    bot_token = getenv("BOT_TOKEN", "5152082846:AAFT8l2UXHcr0uEL6LDqGTfyN0XAY9EAGyw")
     if not bot_token:
         exit("Error: no token provided")
 
     bot = Bot(token=bot_token)
     dp = Dispatcher(bot, storage=MemoryStorage())
+    dp.middleware.setup(AccessMiddleware(list(USER_IDS.keys())))
 
     # Register handler
     register_handlers_budgeting(dp)

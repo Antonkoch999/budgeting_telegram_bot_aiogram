@@ -110,4 +110,4 @@ venv.bak/
 
 Scripts/
 Lib/
-/telebot.db
+/aiogram_modul/finance.db
