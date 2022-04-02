@@ -3,6 +3,7 @@ import logging
 import os
 
 from aiogram import Bot, Dispatcher
+from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.types import BotCommand
 from aiogram.utils.executor import start_webhook
 
@@ -17,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 TOKEN = os.getenv('BOT_TOKEN', '5152082846:AAFT8l2UXHcr0uEL6LDqGTfyN0XAY9EAGyw')
 bot = Bot(token=TOKEN)
-dp = Dispatcher(bot)
+dp = Dispatcher(bot, storage=MemoryStorage())
 dp.middleware.setup(AccessMiddleware(list(USER_IDS.keys())))
 
 HEROKU_APP_NAME = os.getenv('HEROKU_APP_NAME', 'budgeting-bot')
