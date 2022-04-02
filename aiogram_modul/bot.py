@@ -7,7 +7,7 @@ from aiogram.types import BotCommand
 from aiogram.utils.executor import start_webhook
 
 from aiogram_modul.constants import HELP_COMMANDS, USER_IDS
-from aiogram_modul.db import database, check_db_exists
+from aiogram_modul.db import database
 from aiogram_modul.middlewares import AccessMiddleware
 from aiogram_modul.new_entry import register_handlers_budgeting
 from aiogram_modul.base_command import register_handlers_common
