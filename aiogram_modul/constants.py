@@ -59,11 +59,12 @@ class AnswerEnum(enum.Enum):
     BYN = 'BYN'
     START_HEADER = 'Привет. Я бот бюджетирования как я могу тебе помочь?\n\n'
     HELP_HEADER = 'Доступны следующие команды: \n\n'
-    CANCEL_MESSAGE = 'Действие отменено.'
-    NEW_ENTRY = 'Сделать новую запись.'
-    START = 'Начало работы с ботом.'
-    HELP = 'Просмотр меню.'
-    STATISTIC_MONTH = 'Статистика за месяц.'
+    CANCEL_MESSAGE = 'Действие отменено'
+    NEW_ENTRY = 'Сделать новую запись'
+    START = 'Начало работы с ботом'
+    HELP = 'Просмотр меню'
+    STATISTIC_MONTH = 'Статистика за месяц'
+    CANCEL = 'Отменить действие'
 
 
 class CommandEnum(enum.Enum):
@@ -78,6 +79,8 @@ HELP_COMMANDS = {
     f'/{CommandEnum.START.value}': AnswerEnum.START.value,
     f'/{CommandEnum.HELP.value}': AnswerEnum.HELP.value,
     f'/{CommandEnum.NEW.value}': AnswerEnum.NEW_ENTRY.value,
+    f'/{CommandEnum.STATISTIC_MONTH.value}': AnswerEnum.STATISTIC_MONTH.value,
+    f'/{CommandEnum.CANCEL.value}': AnswerEnum.CANCEL.value,
 }
 
 START_COMMANDS = {
@@ -87,6 +90,6 @@ START_COMMANDS = {
 MENU_COMMANDS = {
     f'/{CommandEnum.NEW.value}': AnswerEnum.NEW_ENTRY.value,
     f'/{CommandEnum.STATISTIC_MONTH.value}': AnswerEnum.STATISTIC_MONTH.value,
-    f'/{CommandEnum.CANCEL.value}': AnswerEnum.CANCEL_MESSAGE.value,
+    f'/{CommandEnum.CANCEL.value}': AnswerEnum.CANCEL.value,
 }
 USER_IDS = {333252589: "Кристина", 409501763: "Антон"}
