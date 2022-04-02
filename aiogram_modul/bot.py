@@ -8,7 +8,7 @@ from aiogram.types import BotCommand
 from aiogram.utils import executor
 from aiogram.utils.executor import start_webhook
 
-from aiogram_modul.constants import HELP_COMMANDS, USER_IDS
+from aiogram_modul.constants import MENU_COMMANDS, USER_IDS
 from aiogram_modul.db import database
 from aiogram_modul.middlewares import AccessMiddleware
 from aiogram_modul.new_entry import register_handlers_new_entry
@@ -49,7 +49,7 @@ async def on_shutdown(dispatcher):
 async def set_commands(bot: Bot):
     """Set commands for run dot."""
     command_list = []
-    for command, description in HELP_COMMANDS.items():
+    for command, description in MENU_COMMANDS.items():
         command_list.append(
             BotCommand(command=command, description=description)
         )

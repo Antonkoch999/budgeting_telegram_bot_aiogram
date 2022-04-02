@@ -63,15 +63,28 @@ class AnswerEnum(enum.Enum):
     NEW_ENTRY = 'Сделать новую запись.'
     START = 'Начало работы с ботом.'
     HELP = 'Просмотр меню.'
+    STATISTIC_MONTH = 'Статистика за месяц.'
+
+
+class CommandEnum(enum.Enum):
+    NEW = 'new'
+    STATISTIC_MONTH = 'statistics_month'
+    START = 'start'
+    HELP = 'help'
 
 
 HELP_COMMANDS = {
-    '/help': AnswerEnum.HELP.value,
-    '/new': AnswerEnum.NEW_ENTRY.value,
+    f'/{CommandEnum.START.value}': AnswerEnum.START.value,
+    f'/{CommandEnum.HELP.value}': AnswerEnum.HELP.value,
+    f'/{CommandEnum.NEW.value}': AnswerEnum.NEW_ENTRY.value,
 }
 
 START_COMMANDS = {
-    '/new': AnswerEnum.NEW_ENTRY.value,
+    f'/{CommandEnum.NEW.value}': AnswerEnum.NEW_ENTRY.value,
 }
 
+MENU_COMMANDS = {
+    f'/{CommandEnum.NEW.value}': AnswerEnum.NEW_ENTRY.value,
+    f'/{CommandEnum.STATISTIC_MONTH.value}': AnswerEnum.STATISTIC_MONTH.value,
+}
 USER_IDS = {333252589: "Кристина", 409501763: "Антон"}
