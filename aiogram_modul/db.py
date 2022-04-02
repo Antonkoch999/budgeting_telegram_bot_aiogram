@@ -3,7 +3,7 @@ import os
 from aiogram_modul.constants import CategoryIncomeEnum, CategoryExpenseList, USER_IDS
 from databases import Database
 
-database = Database(os.getenv('DATABASE_URL'))
+database = Database(os.getenv('DATABASE_URL', 'postgres://fqwnoxoapnpriz:5b22ff1c07aadaa97cfa5b225249cff543871279ada909af47833f77b7e82058@ec2-99-80-170-190.eu-west-1.compute.amazonaws.com:5432/d42l3k9jqhgisr'))
 
 
 async def get_category_id_by_name(category_name: str) -> int:
