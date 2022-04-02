@@ -3,6 +3,8 @@ from aiogram import types
 from aiogram.dispatcher.handler import CancelHandler
 from aiogram.dispatcher.middlewares import BaseMiddleware
 
+from aiogram_modul.constants import AnswerEnum
+
 
 class AccessMiddleware(BaseMiddleware):
     def __init__(self, access_ids: list):
@@ -11,5 +13,5 @@ class AccessMiddleware(BaseMiddleware):
 
     async def on_process_message(self, message: types.Message, _):
         if int(message.from_user.id) not in self.access_ids:
-            await message.answer("Access Denied")
+            await message.answer(AnswerEnum.NO_ACCESS.value)
             raise CancelHandler()

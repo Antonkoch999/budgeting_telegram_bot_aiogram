@@ -4,32 +4,38 @@ from aiogram import Dispatcher, types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 
-from aiogram_modul.constants import HELP_COMMANDS
+from aiogram_modul.constants import HELP_COMMANDS, START_COMMANDS, AnswerEnum
+
+
+def _set_help_commands(text: str, type_start: bool = False) -> str:
+    commands = START_COMMANDS if type_start else HELP_COMMANDS
+    for key in commands:
+        text += key + ": "
+        text += commands[key] + "\n"
+    return text
+
+
+def generate_start_text() -> str:
+    return _set_help_commands(AnswerEnum.START_HEADER.value, type_start=True)
 
 
 async def cmd_help(message: types.Message):
     """Help command, display all commands."""
-    help_text = "Доступны следующие команды: \n\n"
-    for key in HELP_COMMANDS:
-        help_text += key + ": "
-        help_text += HELP_COMMANDS[key] + "\n"
+    help_text = _set_help_commands(AnswerEnum.HELP_HEADER.value)
     await message.answer(help_text)
 
 
 async def cmd_start(message: types.Message, state: FSMContext):
     """Start command, display all commands."""
     await state.finish()
-    start_text = "Привет. Я бот бюджетирования как я могу тебе помочь?\n\n"
-    for key in HELP_COMMANDS:
-        start_text += key + ": "
-        start_text += HELP_COMMANDS[key] + "\n"
+    start_text = generate_start_text()
     await message.answer(start_text, reply_markup=types.ReplyKeyboardRemove())
 
 
 async def cmd_cancel(message: types.Message, state: FSMContext):
     """Cancel command, return on start page."""
     await state.finish()
-    await message.answer("Действие отменено", reply_markup=types.ReplyKeyboardRemove())
+    await message.answer(AnswerEnum.CANCEL_MESSAGE.value, reply_markup=types.ReplyKeyboardRemove())
 
 
 def register_handlers_common(dp: Dispatcher):

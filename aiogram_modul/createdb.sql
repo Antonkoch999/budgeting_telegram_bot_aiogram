@@ -4,13 +4,13 @@ create table budget_user(
 );
 
 create table category(
-    id SERIAL
+    id SERIAL primary key,
     name varchar(255),
     is_expense boolean
 );
 
 create table budgeting(
-    id SERIAL
+    id SERIAL primary key,
     amount real,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     user_id integer NOT NULL,

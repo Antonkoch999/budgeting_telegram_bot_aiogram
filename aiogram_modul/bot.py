@@ -5,6 +5,7 @@ import os
 from aiogram import Bot, Dispatcher
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.types import BotCommand
+from aiogram.utils import executor
 from aiogram.utils.executor import start_webhook
 
 from aiogram_modul.constants import HELP_COMMANDS, USER_IDS
@@ -59,7 +60,7 @@ if __name__ == '__main__':
     # Register handler
     register_handlers_budgeting(dp)
     register_handlers_common(dp)
-
+    # executor.start_polling(dp, skip_updates=True)
     start_webhook(
         dispatcher=dp,
         webhook_path=WEBHOOK_PATH,

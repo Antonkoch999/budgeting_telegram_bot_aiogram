@@ -3,30 +3,29 @@
 from aiogram.types import ReplyKeyboardMarkup
 
 from aiogram_modul.constants import (
-    CATEGORY_EXPENSE_LIST,
-    CATEGORY_INCOME_LIST,
-    INCOME_AND_EXPENSE_LIST,
-    TEXT_FOR_BUTTON_BACK,
-    TEXT_FOR_BUTTON_CANCEL,
     USER_IDS,
+    BackEnum,
+    CategoryExpenseList,
+    CategoryIncomeEnum,
+    IncomeExpenseEnum,
 )
 
-user_key_board = ReplyKeyboardMarkup(
+user_key_board_markup = ReplyKeyboardMarkup(
     resize_keyboard=True,
-).add(*USER_IDS.values()).row(TEXT_FOR_BUTTON_CANCEL)
+).add(*USER_IDS.values()).row(BackEnum.CANCEL.value)
 
-income_and_expense = ReplyKeyboardMarkup(
+income_and_expense_markup = ReplyKeyboardMarkup(
     resize_keyboard=True,
-).add(*INCOME_AND_EXPENSE_LIST).row(TEXT_FOR_BUTTON_BACK)
+).add(*IncomeExpenseEnum.list_value()).row(BackEnum.BACK.value)
 
-category_income = ReplyKeyboardMarkup(
+category_income_markup = ReplyKeyboardMarkup(
     resize_keyboard=True,
-).add(*CATEGORY_INCOME_LIST).row(TEXT_FOR_BUTTON_BACK)
+).add(*CategoryIncomeEnum.list_value()).row(BackEnum.BACK.value)
 
-category_expense = ReplyKeyboardMarkup(
+category_expense_markup = ReplyKeyboardMarkup(
     resize_keyboard=True,
-).add(*CATEGORY_EXPENSE_LIST).row(TEXT_FOR_BUTTON_BACK)
+).add(*CategoryExpenseList.list_value()).row(BackEnum.BACK.value)
 
-back_keyboard = ReplyKeyboardMarkup(
+back_keyboard_markup = ReplyKeyboardMarkup(
     resize_keyboard=True,
-).row(TEXT_FOR_BUTTON_BACK)
+).row(BackEnum.BACK.value)

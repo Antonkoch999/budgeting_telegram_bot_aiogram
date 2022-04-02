@@ -1,32 +1,78 @@
 """Constant."""
+import enum
+
+
+class BaseEnum(enum.Enum):
+
+    @classmethod
+    def list_value(cls):
+        return [i.value for i in cls]
+
+
+class IncomeExpenseEnum(BaseEnum):
+
+    INCOME = 'Доход'
+    EXPENSE = 'Расход'
+
+
+class BackEnum(BaseEnum):
+    BACK = 'Назад'
+    CANCEL = 'Отмена'
+
+
+class CategoryIncomeEnum(BaseEnum):
+    SALARY = 'Зарплата'
+    INDIVIDUAL_ENTREPRENEUR = 'ИП'
+    HERMES = 'Hermes'
+    OTHER = 'Другое'
+    CARE_ALLOWANCE = 'Пособие'
+    CURRENCY_EXCHANGE = 'Обмен валют доход'
+
+
+class CategoryExpenseList(BaseEnum):
+    CHILDREN = 'Ребенок'
+    CAR = 'Машина'
+    HEALTH = 'Лечение'
+    PRODUCT = 'Продукты'
+    FAST_FOOD = 'Fast-Food'
+    CREDIT = 'Кредиты'
+    HOUSEHOLD_GOODS = 'Хозяйственные товары'
+    UTILITIES = 'Коммунальные услуги, связь'
+    LEISURE = 'Досуг'
+    CLOTHES = 'Одежда'
+    PRESENT = 'Подарки'
+    CURRENCY_EXCHANGE = 'Обмен валют расход'
+
+
+class AnswerEnum(enum.Enum):
+    ANSWER_NEW_ENTRY = 'Как вас зовут?'
+    ANSWER_INCOME_EXPENSE = 'Вы хотите записать доход или расход?'
+    NO_ACCESS = 'У вас нет доступа!'
+    CHOICE_CATEGORY = 'Выберие категорию из категории {message_text}:'
+    SET_AMOUNT = 'Введите сумму категории: {message_text} в BYN:'
+    INCORRECT_AMOUNT = 'Некорретный формат ввода суммы, попробуйте снова!. Пример: 25.37'
+    DATA_RECORDED = 'Данные записаны!'
+    NAME = 'Имя:'
+    CHAPTER = 'Раздел:'
+    CATEGORY = 'Категория:'
+    AMOUNT = 'Сумма:'
+    BYN = 'BYN'
+    START_HEADER = 'Привет. Я бот бюджетирования как я могу тебе помочь?\n\n'
+    HELP_HEADER = 'Доступны следующие команды: \n\n'
+    CANCEL_MESSAGE = 'Действие отменено'
+    NEW_ENTRY = 'Сделать новую запись.'
+    START = 'Начало работы с ботом.'
+    HELP = 'Просмотр меню.'
+
 
 HELP_COMMANDS = {
-    '/start': 'Начало работы с ботом.',
-    '/help': 'Просмотр меню.',
-    '/new': 'Сделать новую запись.',
+    '/start': AnswerEnum.START.value,
+    '/help': AnswerEnum.HELP.value,
+    '/new': AnswerEnum.NEW_ENTRY.value,
 }
 
 START_COMMANDS = {
-    '/new': 'Сделать новую запись.',
+    '/new': AnswerEnum.NEW_ENTRY.value,
 }
 
-USER_KEY_BOARD_LIST = ['Кристина', 'Антон']
-INCOME_AND_EXPENSE_LIST = ['Доход', 'Расход']
-CATEGORY_INCOME_LIST = ['Зарплата', 'ИП', 'Hermes', 'Другое', 'Пособие']
-CATEGORY_EXPENSE_LIST = [
-    'Ребенок',
-    'Машина',
-    'Лечение',
-    'Продукты',
-    'Fast-Food',
-    'Кредиты',
-    'Хоз.нужды',
-    'Коммунальные услуги, связь',
-    'Досуг',
-    'Одежда',
-    'Подарки',
-]
 USER_IDS = {333252589: "Кристина", 409501763: "Антон"}
-TEXT_FOR_BUTTON_BACK = 'Назад'
-TEXT_FOR_BUTTON_CANCEL = 'Отмена'
-ANSWER_NEW_ENTRY = 'Как вас зовут?'

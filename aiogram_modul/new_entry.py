@@ -5,19 +5,21 @@ from aiogram import Dispatcher, types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.utils import markdown
+
+from aiogram_modul.base_command import generate_start_text
 from aiogram_modul.constants import (
-    ANSWER_NEW_ENTRY,
-    INCOME_AND_EXPENSE_LIST,
-    TEXT_FOR_BUTTON_BACK,
     USER_IDS,
+    AnswerEnum,
+    BackEnum,
+    IncomeExpenseEnum,
 )
 from aiogram_modul.db import write_budgeting
 from aiogram_modul.keyboard import (
-    back_keyboard,
-    user_key_board,
-    income_and_expense,
-    category_income,
-    category_expense,
+    back_keyboard_markup,
+    user_key_board_markup,
+    income_and_expense_markup,
+    category_income_markup,
+    category_expense_markup,
 )
 from aiogram_modul.help_functions import check_is_digit
 
@@ -38,64 +40,66 @@ async def new_entry(message: types.Message):
     """New entry."""
     await BudgetingState.name.set()
     logger.info("Set state name")
-    await message.answer(ANSWER_NEW_ENTRY, reply_markup=user_key_board)
+    await message.answer(AnswerEnum.ANSWER_NEW_ENTRY.value, reply_markup=user_key_board_markup)
 
 
 async def choice_user(message: types.Message, state: FSMContext):
     """Choice income or expense."""
+    if message.text == BackEnum.CANCEL.value:
+        await state.finish()
+        start_text = generate_start_text()
+        await message.answer(start_text, reply_markup=types.ReplyKeyboardRemove())
+
     if USER_IDS.get(message['from']['id']) != message.text:
-        await message.answer('У вас нет доступа!')
+        await message.answer(AnswerEnum.NO_ACCESS.value)
         return
 
     await state.update_data(name_user=message.text)
     await BudgetingState.income_and_expense.set()
     logger.info("Set state income and expense")
-    await message.answer('Вы хотите записать доход или расход?', reply_markup=income_and_expense)
+    await message.answer(AnswerEnum.ANSWER_INCOME_EXPENSE.value, reply_markup=income_and_expense_markup)
 
 
 async def choice_income_or_expense(message: types.Message, state: FSMContext):
     """Choice category or enter sum income."""
-    if message.text == TEXT_FOR_BUTTON_BACK:
+    if message.text == BackEnum.BACK.value:
         await BudgetingState.name.set()
-        await message.answer(ANSWER_NEW_ENTRY, reply_markup=user_key_board)
+        await message.answer(AnswerEnum.ANSWER_NEW_ENTRY.value, reply_markup=user_key_board_markup)
         return
 
-    if message.text not in INCOME_AND_EXPENSE_LIST:
-        await message.answer('Пожалуйста, выберите что вы хотите записать, доход или расход?')
-        return
-
-    await state.update_data(income_or_expense=message.text)
-    await BudgetingState.category.set()
-    await message.answer(
-        f'Выберите категорию из категории {message.text}:',
-        reply_markup=category_income if message.text == 'Доход' else category_expense,
-    )
+    if message.text in IncomeExpenseEnum.list_value():
+        await state.update_data(income_or_expense=message.text)
+        await BudgetingState.category.set()
+        await message.answer(
+            AnswerEnum.CHOICE_CATEGORY.value.format(message_text=message.text),
+            reply_markup=category_income_markup if message.text == IncomeExpenseEnum.INCOME.value else category_expense_markup,
+        )
 
 
 async def choice_category(message: types.Message, state: FSMContext):
-    if message.text == TEXT_FOR_BUTTON_BACK:
+    if message.text == BackEnum.BACK.value:
         await BudgetingState.income_and_expense.set()
         await message.answer(
-            'Вы хотите записать доход или расход?',
-            reply_markup=income_and_expense,
+            AnswerEnum.ANSWER_INCOME_EXPENSE.value,
+            reply_markup=income_and_expense_markup,
         )
         return
 
     await state.update_data(category_income_or_expense=message.text)
     await BudgetingState.summa.set()
     await message.answer(
-        f'Введите сумму категории: {message.text} в BYN:',
-        reply_markup=back_keyboard,
+        AnswerEnum.SET_AMOUNT.value.format(message_text=message.text),
+        reply_markup=back_keyboard_markup,
     )
 
 
 async def enter_amount_income_or_expense(message: types.Message, state: FSMContext):
     """Enter amount income or expense."""
-    if message.text == TEXT_FOR_BUTTON_BACK:
+    if message.text == BackEnum.BACK.value:
         await BudgetingState.category.set()
         await message.answer(
-            f'Выберите категорию {message.text}:',
-            reply_markup=category_income if message.text == 'Доход' else category_expense,
+            AnswerEnum.CHOICE_CATEGORY.value.format(message_text=message.text),
+            reply_markup=category_income_markup if message.text == IncomeExpenseEnum.INCOME.value else category_expense_markup,
         )
         return
 
@@ -103,36 +107,24 @@ async def enter_amount_income_or_expense(message: types.Message, state: FSMConte
         summa_is_number = check_is_digit(message.text.replace(',', '.'))
         if summa_is_number:
             data['amount'] = summa_is_number
-            name_for_db = data.get(
-                "name_user",
-                "Аноним",
-            )
-            income_expense_for_db = data.get(
-                "income_or_expense",
-                "Не понятно что",
-            )
-            category_for_db = data.get(
-                "category_income_or_expense",
-                "Зарплата.",
-            )
-            amount_for_db = data.get(
-                "amount",
-                "Сумма не указана",
-            )
+            name_for_db = data['name_user']
+            income_expense_for_db = data['income_or_expense']
+            category_for_db = data['category_income_or_expense']
+            amount_for_db = data['amount']
             await write_budgeting(message['from']['id'], category_for_db, amount_for_db)
             await message.answer(
                 markdown.text(
-                    markdown.text(markdown.hitalic("Данные записаны!")),
+                    markdown.text(markdown.hitalic(AnswerEnum.DATA_RECORDED.value)),
                     markdown.text(
-                        "Имя: ",
+                        AnswerEnum.NAME.value,
                         markdown.hunderline(f"{name_for_db}"),
                     ),
-                    markdown.text(f"Раздел: {income_expense_for_db}"),
-                    markdown.text(f"Категория: {category_for_db}"),
+                    markdown.text(f"{AnswerEnum.CHAPTER.value} {income_expense_for_db}"),
+                    markdown.text(f"{AnswerEnum.CATEGORY.value} {category_for_db}"),
                     markdown.text(
-                        "Сумма: ",
+                        AnswerEnum.AMOUNT.value,
                         markdown.hbold(f'{amount_for_db}'),
-                        "BYN",
+                        AnswerEnum.BYN.value,
                     ),
                     sep="\n",
                 ),
@@ -140,9 +132,9 @@ async def enter_amount_income_or_expense(message: types.Message, state: FSMConte
                 reply_markup=types.ReplyKeyboardRemove(),
             )
         else:
-            await message.answer('Некорретный формат ввода суммы, '
-                                 'попробуйте снова!. Пример: 25.37')
+            await message.answer(AnswerEnum.INCORRECT_AMOUNT.value)
             return
+
         await state.finish()
 
 
