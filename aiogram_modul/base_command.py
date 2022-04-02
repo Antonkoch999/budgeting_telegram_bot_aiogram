@@ -4,7 +4,7 @@ from aiogram import Dispatcher, types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 
-from aiogram_modul.constants import HELP_COMMANDS, START_COMMANDS, AnswerEnum
+from aiogram_modul.constants import HELP_COMMANDS, START_COMMANDS, AnswerEnum, CommandEnum
 
 
 def _set_help_commands(text: str, type_start: bool = False) -> str:
@@ -40,7 +40,7 @@ async def cmd_cancel(message: types.Message, state: FSMContext):
 
 def register_handlers_common(dp: Dispatcher):
     """Register command in this file."""
-    dp.register_message_handler(cmd_start, commands="start", state="*")
-    dp.register_message_handler(cmd_help, commands="help", state="*")
-    dp.register_message_handler(cmd_cancel, commands="cancel", state="*")
+    dp.register_message_handler(cmd_start, commands=CommandEnum.START.value, state="*")
+    dp.register_message_handler(cmd_help, commands=CommandEnum.HELP.value, state="*")
+    dp.register_message_handler(cmd_cancel, commands=CommandEnum.CANCEL.value, state="*")
     dp.register_message_handler(cmd_cancel, Text(equals="Отмена", ignore_case=True), state="*")
