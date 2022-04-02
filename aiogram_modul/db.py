@@ -29,22 +29,22 @@ async def write_budgeting(user_id: int, category_name: str, amount: float):
 #         sqls = await f.read()
 #     await asyncio.gather(*(database.execute(sql) for sql in sqls.split(';')))
 #
-#
-# async def _init_insert_user():
-#     sql = "INSERT INTO budget_user (telegram_id, name) VALUES (:telegram_id, :name)"
-#     values = [{"telegram_id": telegram_id, "name": name} for telegram_id, name in USER_IDS.items()]
-#     await database.execute_many(sql, values)
-#
-#
-# async def _init_insert_category():
-#     sql = "INSERT INTO category (name, is_expense) VALUES (:name, :is_expense)"
-#     values = [
-#         {"name": category, "is_expense": False} for category in CATEGORY_INCOME_LIST
-#     ]
-#     values += [
-#         {"name": category, "is_expense": True} for category in CATEGORY_EXPENSE_LIST
-#     ]
-#     await database.execute_many(sql, values)
+
+async def _init_insert_user():
+    sql = "INSERT INTO budget_user (telegram_id, name) VALUES (:telegram_id, :name)"
+    values = [{"telegram_id": telegram_id, "name": name} for telegram_id, name in USER_IDS.items()]
+    await database.execute_many(sql, values)
+
+
+async def _init_insert_category():
+    sql = "INSERT INTO category (name, is_expense) VALUES (:name, :is_expense)"
+    values = [
+        {"name": category, "is_expense": False} for category in CATEGORY_INCOME_LIST
+    ]
+    values += [
+        {"name": category, "is_expense": True} for category in CATEGORY_EXPENSE_LIST
+    ]
+    await database.execute_many(sql, values)
 #
 #
 # async def check_db_exists():
