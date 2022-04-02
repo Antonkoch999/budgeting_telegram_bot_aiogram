@@ -42,6 +42,7 @@ class CategoryExpenseList(BaseEnum):
     CLOTHES = 'Одежда'
     PRESENT = 'Подарки'
     CURRENCY_EXCHANGE = 'Обмен валют расход'
+    BEAUTY = 'Красота'
 
 
 class AnswerEnum(enum.Enum):

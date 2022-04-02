@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 
 from aiogram_modul.constants import CategoryIncomeEnum, CategoryExpenseList, USER_IDS
 from databases import Database
@@ -20,6 +21,10 @@ async def write_budgeting(user_id: int, category_name: str, amount: float):
     sql = (f"INSERT INTO budgeting (amount, user_id, category_id) "
            f"VALUES ({amount}, {user_id}, {category_id})")
     await database.execute(sql)
+
+
+async def get_statistic_month(user_id: int = None):
+    current_month = datetime.now().month
 
 
 async def _init_insert_user():
