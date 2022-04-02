@@ -9,7 +9,7 @@ database = Database(os.getenv('DATABASE_URL', 'postgres://fqwnoxoapnpriz:5b22ff1
 
 
 async def get_category_id_by_name(category_name: str) -> int:
-    rows = await database.fetch_all(f'SELECT id FROM category WHERE name = {category_name}')
+    rows = await database.fetch_all(f"SELECT id FROM category WHERE name = '{category_name}'")
     result = []
     for row in rows:
         result.append(row[0])
