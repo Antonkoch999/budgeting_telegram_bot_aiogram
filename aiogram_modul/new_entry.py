@@ -119,7 +119,7 @@ async def enter_amount_income_or_expense(message: types.Message, state: FSMConte
                 "amount",
                 "Сумма не указана",
             )
-            write_budgeting(message['from']['id'], category_for_db, amount_for_db)
+            await write_budgeting(message['from']['id'], category_for_db, amount_for_db)
             await message.answer(
                 markdown.text(
                     markdown.text(markdown.hitalic("Данные записаны!")),

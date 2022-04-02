@@ -1,20 +1,46 @@
 """Run bot."""
-
-import asyncio
 import logging
-from os import getenv
-from sys import exit
+import os
 
 from aiogram import Bot, Dispatcher
 from aiogram.types import BotCommand
-from aiogram.contrib.fsm_storage.memory import MemoryStorage
+from aiogram.utils.executor import start_webhook
 
 from aiogram_modul.constants import HELP_COMMANDS, USER_IDS
+from aiogram_modul.db import database, check_db_exists
 from aiogram_modul.middlewares import AccessMiddleware
 from aiogram_modul.new_entry import register_handlers_budgeting
 from aiogram_modul.base_command import register_handlers_common
 
 logger = logging.getLogger(__name__)
+
+
+TOKEN = os.getenv('BOT_TOKEN', '5152082846:AAFT8l2UXHcr0uEL6LDqGTfyN0XAY9EAGyw')
+bot = Bot(token=TOKEN)
+dp = Dispatcher(bot)
+dp.middleware.setup(AccessMiddleware(list(USER_IDS.keys())))
+
+HEROKU_APP_NAME = os.getenv('HEROKU_APP_NAME', 'budgeting-bot')
+
+# webhook settings
+WEBHOOK_HOST = f'https://{HEROKU_APP_NAME}.herokuapp.com'
+WEBHOOK_PATH = f'/webhook/{TOKEN}'
+WEBHOOK_URL = f'{WEBHOOK_HOST}{WEBHOOK_PATH}'
+
+# webserver settings
+WEBAPP_HOST = '0.0.0.0'
+WEBAPP_PORT = os.getenv('PORT', 8000)
+
+
+async def on_startup(dispatcher):
+    await database.connect()
+    await set_commands(bot)
+    await bot.set_webhook(WEBHOOK_URL, drop_pending_updates=True)
+
+
+async def on_shutdown(dispatcher):
+    await database.disconnect()
+    await bot.delete_webhook()
 
 
 async def set_commands(bot: Bot):
@@ -27,32 +53,18 @@ async def set_commands(bot: Bot):
     await bot.set_my_commands(command_list)
 
 
-async def main():
-    """Run bot."""
-    # Settings logging in stdout
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
-    )
-
-    # Declaring and initializing bot and dispatcher objects
-    bot_token = getenv("BOT_TOKEN", "5152082846:AAFT8l2UXHcr0uEL6LDqGTfyN0XAY9EAGyw")
-    if not bot_token:
-        exit("Error: no token provided")
-
-    bot = Bot(token=bot_token)
-    dp = Dispatcher(bot, storage=MemoryStorage())
-    dp.middleware.setup(AccessMiddleware(list(USER_IDS.keys())))
-
+if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO)
     # Register handler
     register_handlers_budgeting(dp)
     register_handlers_common(dp)
-    # Set command bot
-    await set_commands(bot)
 
-    # Run polling
-    await dp.skip_updates()  # skip updates (optional)
-    await dp.start_polling()
-
-if __name__ == '__main__':
-    asyncio.run(main())
+    start_webhook(
+        dispatcher=dp,
+        webhook_path=WEBHOOK_PATH,
+        skip_updates=True,
+        on_startup=on_startup,
+        on_shutdown=on_shutdown,
+        host=WEBAPP_HOST,
+        port=WEBAPP_PORT,
+    )
