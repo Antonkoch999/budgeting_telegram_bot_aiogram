@@ -11,8 +11,9 @@ from aiogram.utils.executor import start_webhook
 from aiogram_modul.constants import HELP_COMMANDS, USER_IDS
 from aiogram_modul.db import database
 from aiogram_modul.middlewares import AccessMiddleware
-from aiogram_modul.new_entry import register_handlers_budgeting
+from aiogram_modul.new_entry import register_handlers_new_entry
 from aiogram_modul.base_command import register_handlers_common
+from aiogram_modul.statistics import register_handlers_statistics
 
 logger = logging.getLogger(__name__)
 
@@ -58,8 +59,9 @@ async def set_commands(bot: Bot):
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
     # Register handler
-    register_handlers_budgeting(dp)
+    register_handlers_new_entry(dp)
     register_handlers_common(dp)
+    register_handlers_statistics(dp)
     # executor.start_polling(dp, skip_updates=True)
     start_webhook(
         dispatcher=dp,

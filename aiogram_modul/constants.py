@@ -66,7 +66,6 @@ class AnswerEnum(enum.Enum):
 
 
 HELP_COMMANDS = {
-    '/start': AnswerEnum.START.value,
     '/help': AnswerEnum.HELP.value,
     '/new': AnswerEnum.NEW_ENTRY.value,
 }

@@ -138,7 +138,7 @@ async def enter_amount_income_or_expense(message: types.Message, state: FSMConte
         await state.finish()
 
 
-def register_handlers_budgeting(dp: Dispatcher):
+def register_handlers_new_entry(dp: Dispatcher):
     """Register command in this file."""
     dp.register_message_handler(
         new_entry,
