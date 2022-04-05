@@ -9,7 +9,7 @@ from aiogram.utils import executor
 from aiogram.utils.executor import start_webhook
 
 from aiogram_modul.constants import MENU_COMMANDS, USER_IDS
-from aiogram_modul.db import database
+from database.db import create_async_database
 from aiogram_modul.middlewares import AccessMiddleware
 from aiogram_modul.new_entry import register_handlers_new_entry
 from aiogram_modul.base_command import register_handlers_common
@@ -36,14 +36,16 @@ WEBAPP_PORT = os.getenv('PORT', 8000)
 
 
 async def on_startup(dispatcher):
-    await database.connect()
+    bot['session'] = await create_async_database()
     await set_commands(bot)
     await bot.set_webhook(WEBHOOK_URL, drop_pending_updates=True)
 
 
 async def on_shutdown(dispatcher):
-    await database.disconnect()
+    await dp.bot.get('session').close()
     await bot.delete_webhook()
+    await dp.storage.close()
+    await dp.storage.wait_closed()
 
 
 async def set_commands(bot: Bot):
@@ -62,7 +64,8 @@ if __name__ == '__main__':
     register_handlers_new_entry(dp)
     register_handlers_common(dp)
     register_handlers_statistics(dp)
-    # executor.start_polling(dp, skip_updates=True)
+
+    # executor.start_polling(dp, skip_updates=True, on_startup=on_startup, on_shutdown=on_shutdown)
     start_webhook(
         dispatcher=dp,
         webhook_path=WEBHOOK_PATH,

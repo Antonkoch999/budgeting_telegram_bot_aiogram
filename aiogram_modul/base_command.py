@@ -5,6 +5,7 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 
 from aiogram_modul.constants import HELP_COMMANDS, START_COMMANDS, AnswerEnum, CommandEnum
+from database.db import get_all_user_telegram_id, create_new_user
 
 
 def _set_help_commands(text: str, type_start: bool = False) -> str:
@@ -27,8 +28,20 @@ async def cmd_help(message: types.Message):
 
 async def cmd_start(message: types.Message, state: FSMContext):
     """Start command, display all commands."""
-    await state.finish()
+    async_session = message.bot['session']
+    username = message.from_user.username
+    telegram_id = message.from_user.id
+    locale = message.from_user.locale.language
+    telegram_ids = await get_all_user_telegram_id(async_session)
     start_text = generate_start_text()
+
+    if telegram_id not in telegram_ids:
+        new_user = AnswerEnum.NEW_USER.value.format(username=username) + start_text
+        await create_new_user(async_session, telegram_id, username, locale)
+        await message.answer(new_user, reply_markup=types.ReplyKeyboardRemove())
+        return
+
+    await state.finish()
     await message.answer(start_text, reply_markup=types.ReplyKeyboardRemove())
 
 

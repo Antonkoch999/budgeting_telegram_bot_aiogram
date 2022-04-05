@@ -22,15 +22,9 @@ class BackEnum(BaseEnum):
 
 class CategoryIncomeEnum(BaseEnum):
     SALARY = 'Зарплата'
-    INDIVIDUAL_ENTREPRENEUR = 'ИП'
-    HERMES = 'Hermes'
-    OTHER = 'Другое'
-    CARE_ALLOWANCE = 'Пособие'
-    CURRENCY_EXCHANGE = 'Обмен валют доход'
 
 
 class CategoryExpenseList(BaseEnum):
-    CHILDREN = 'Ребенок'
     CAR = 'Машина'
     HEALTH = 'Лечение'
     PRODUCT = 'Продукты'
@@ -41,12 +35,10 @@ class CategoryExpenseList(BaseEnum):
     LEISURE = 'Досуг'
     CLOTHES = 'Одежда'
     PRESENT = 'Подарки'
-    CURRENCY_EXCHANGE = 'Обмен валют расход'
     BEAUTY = 'Красота'
 
 
 class AnswerEnum(enum.Enum):
-    ANSWER_NEW_ENTRY = 'Как вас зовут?'
     ANSWER_INCOME_EXPENSE = 'Вы хотите записать доход или расход?'
     NO_ACCESS = 'У вас нет доступа!'
     CHOICE_CATEGORY = 'Выберие категорию из категории {message_text}:'
@@ -58,7 +50,7 @@ class AnswerEnum(enum.Enum):
     CATEGORY = 'Категория:'
     AMOUNT = 'Сумма:'
     BYN = 'BYN'
-    START_HEADER = 'Привет. Я бот бюджетирования как я могу тебе помочь?\n\n'
+    START_HEADER = 'Я бот бюджетирования как я могу тебе помочь?\n\n'
     HELP_HEADER = 'Доступны следующие команды: \n\n'
     CANCEL_MESSAGE = 'Действие отменено'
     NEW_ENTRY = 'Сделать новую запись'
@@ -66,6 +58,7 @@ class AnswerEnum(enum.Enum):
     HELP = 'Просмотр меню'
     STATISTIC_MONTH = 'Статистика за месяц'
     CANCEL = 'Отменить действие'
+    NEW_USER = 'Добро пожаловать, {username}!\n\n'
 
 
 class CommandEnum(enum.Enum):

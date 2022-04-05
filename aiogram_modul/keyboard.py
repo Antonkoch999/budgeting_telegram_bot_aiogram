@@ -3,16 +3,11 @@
 from aiogram.types import ReplyKeyboardMarkup
 
 from aiogram_modul.constants import (
-    USER_IDS,
     BackEnum,
     CategoryExpenseList,
     CategoryIncomeEnum,
     IncomeExpenseEnum,
 )
-
-user_key_board_markup = ReplyKeyboardMarkup(
-    resize_keyboard=True,
-).add(*USER_IDS.values()).row(BackEnum.CANCEL.value)
 
 income_and_expense_markup = ReplyKeyboardMarkup(
     resize_keyboard=True,
