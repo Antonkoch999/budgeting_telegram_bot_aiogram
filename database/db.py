@@ -6,14 +6,13 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 
 from aiogram_modul.constants import CategoryIncomeEnum, CategoryExpenseList
+from config import database_async_url
 
 from database.models import Base, Budgeting, Category, User
 
 
 async def create_async_database():
-    engine = create_async_engine(
-        os.getenv('DATABASE_ASYNC_URL', "postgresql+asyncpg://fqwnoxoapnpriz:5b22ff1c07aadaa97cfa5b225249cff543871279ada909af47833f77b7e82058@ec2-99-80-170-190.eu-west-1.compute.amazonaws.com:5432/d42l3k9jqhgisr"),
-    )
+    engine = create_async_engine(database_async_url)
 
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)

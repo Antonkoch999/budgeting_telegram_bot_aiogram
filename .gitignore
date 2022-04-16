@@ -111,3 +111,4 @@ venv.bak/
 Scripts/
 Lib/
 /aiogram_modul/finance.db
+/.env

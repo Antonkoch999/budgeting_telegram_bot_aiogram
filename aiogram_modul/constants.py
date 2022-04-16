@@ -86,4 +86,3 @@ MENU_COMMANDS = {
     f'/{CommandEnum.STATISTIC_MONTH.value}': AnswerEnum.STATISTIC_MONTH.value,
     f'/{CommandEnum.CANCEL.value}': AnswerEnum.CANCEL.value,
 }
-USER_IDS = {333252589: "Кристина", 409501763: "Антон"}

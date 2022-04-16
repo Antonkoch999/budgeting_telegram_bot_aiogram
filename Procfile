@@ -1,1 +1,0 @@
-web: python3 ./aiogram_modul/bot.py
