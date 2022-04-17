@@ -4,6 +4,7 @@ import logging
 from aiogram import Dispatcher, types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
+from aiogram.types import ReplyKeyboardMarkup
 from aiogram.utils import markdown
 
 from aiogram_modul.base_command import generate_start_text
@@ -12,12 +13,10 @@ from aiogram_modul.constants import (
     BackEnum,
     IncomeExpenseEnum,
 )
-from database.db import write_budgeting
+from database.db import write_budgeting, get_categories_by_user
 from aiogram_modul.keyboard import (
     back_keyboard_markup,
     income_and_expense_markup,
-    category_income_markup,
-    category_expense_markup,
 )
 from aiogram_modul.help_functions import check_is_digit
 
@@ -47,12 +46,21 @@ async def choice_income_or_expense(message: types.Message, state: FSMContext):
         await message.answer(generate_start_text(), reply_markup=types.ReplyKeyboardRemove())
         return
 
+    user_categories = await get_categories_by_user(
+        message.bot['session'],
+        message['from']['id'],
+        expense=bool(message.text == IncomeExpenseEnum.EXPENSE.value),
+    )
+    category_income_expense_markup = ReplyKeyboardMarkup(resize_keyboard=True).add(
+        *user_categories
+    ).row(BackEnum.BACK.value)
     if message.text in IncomeExpenseEnum.list_value():
         await state.update_data(income_or_expense=message.text)
+        await state.update_data(user_categories=user_categories)
         await BudgetingState.category.set()
         await message.answer(
             AnswerEnum.CHOICE_CATEGORY.value.format(message_text=message.text),
-            reply_markup=category_income_markup if message.text == IncomeExpenseEnum.INCOME.value else category_expense_markup,
+            reply_markup=category_income_expense_markup,
         )
 
 
@@ -76,10 +84,15 @@ async def choice_category(message: types.Message, state: FSMContext):
 async def enter_amount_income_or_expense(message: types.Message, state: FSMContext):
     """Enter amount income or expense."""
     if message.text == BackEnum.BACK.value:
+        state_data = await state.get_data()
+        user_categories = state_data['user_categories']
+        category_income_expense_markup = ReplyKeyboardMarkup(resize_keyboard=True).add(
+            *user_categories
+        ).row(BackEnum.BACK.value)
         await BudgetingState.category.set()
         await message.answer(
-            AnswerEnum.CHOICE_CATEGORY.value.format(message_text=message.text),
-            reply_markup=category_income_markup if message.text == IncomeExpenseEnum.INCOME.value else category_expense_markup,
+            AnswerEnum.CHOICE_CATEGORY.value.format(message_text=state_data['income_or_expense']),
+            reply_markup=category_income_expense_markup,
         )
         return
 

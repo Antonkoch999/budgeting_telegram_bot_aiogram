@@ -38,6 +38,7 @@ class Category(Base):
 
     name = Column(String(255))
     is_expense = Column(Boolean)
+    default = Column(Boolean)
 
 
 class Budgeting(Base):

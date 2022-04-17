@@ -1,5 +1,5 @@
-import os
 from datetime import datetime
+from typing import List
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
@@ -38,7 +38,13 @@ async def get_all_user_telegram_id(session: AsyncSession) -> list:
 
 
 async def create_new_user(session: AsyncSession, telegram_id: int, username: str, locale: str):
-    session.add(User(telegram_id=telegram_id, username=username, locale=locale))
+    default_categories = await session.execute(select(Category).where(Category.default == True))
+    session.add(User(
+        telegram_id=telegram_id,
+        username=username,
+        locale=locale,
+        categories=[category for category in default_categories.scalars()],
+    ))
     await session.commit()
 
 
@@ -46,14 +52,28 @@ async def get_user_by_telegram_id(session: AsyncSession, telegram_id: int):
     users = await session.execute(select(User).where(User.telegram_id == telegram_id))
     user = users.scalars().first()
 
-    return user.id
+    return user
 
 
 async def write_budgeting(session: AsyncSession, telegramm_id: int, category_name: str, amount: float):
     category_id = await get_category_id_by_name(session, category_name)
-    user_id = await get_user_by_telegram_id(session, telegramm_id)
-    session.add(Budgeting(amount=amount, user_id=user_id, category_id=category_id))
+    user = await get_user_by_telegram_id(session, telegramm_id)
+    session.add(Budgeting(amount=amount, user_id=user.id, category_id=category_id))
     await session.commit()
+
+
+async def write_new_category(session: AsyncSession, telegramm_id: int, category_name: str, expense: bool):
+    user = await get_user_by_telegram_id(session, telegramm_id)
+    session.add(Category(name=category_name, is_expense=expense, default=False, users=[user]))
+    await session.commit()
+
+
+async def get_categories_by_user(session: AsyncSession, telegramm_id: int, expense: bool) -> List[str]:
+    user = await get_user_by_telegram_id(session, telegramm_id)
+    user_categories = await session.execute(
+        select(Category.name).join(Category.users).filter(User.id == user.id, Category.is_expense == expense)
+    )
+    return list(user_categories.scalars())
 
 
 async def get_statistic_month(user_id: int = None):
@@ -62,11 +82,11 @@ async def get_statistic_month(user_id: int = None):
 
 async def _init_insert_category(session: AsyncSession):
     list_category = [
-        Category(name=category, is_expense=False)
+        Category(name=category, is_expense=False, default=True)
         for category in CategoryIncomeEnum.list_value()
     ]
     list_category.extend([
-        Category(name=category, is_expense=True)
+        Category(name=category, is_expense=True, default=True)
         for category in CategoryExpenseList.list_value()
     ])
     session.add_all(list_category)
