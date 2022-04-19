@@ -48,9 +48,10 @@ class AnswerEnum(enum.Enum):
     INCORRECT_AMOUNT = 'Некорретный формат ввода суммы, попробуйте снова!. Пример: 25.37'
     DATA_RECORDED = 'Данные записаны!'
     NAME = 'Имя:'
-    CHAPTER = 'Раздел:'
-    CATEGORY = 'Категория:'
-    AMOUNT = 'Сумма:'
+    CHAPTER = 'Раздел'
+    CATEGORY = 'Категория'
+    AMOUNT = 'Сумма'
+    DATE = 'Дата'
     BYN = 'BYN'
     START_HEADER = 'Я бот бюджетирования как я могу тебе помочь?\n\n'
     HELP_HEADER = 'Доступны следующие команды: \n\n'
@@ -58,15 +59,16 @@ class AnswerEnum(enum.Enum):
     NEW_ENTRY = 'Сделать новую запись'
     START = 'Начало работы с ботом'
     HELP = 'Просмотр меню'
-    STATISTIC_MONTH = 'Статистика за месяц'
+    HISTORY_MONTH = 'История за месяц'
     CANCEL = 'Отменить действие'
     NEW_USER = 'Добро пожаловать, {username}!\n\n'
     ADD_CATEGORY = 'Добавить новую категорию.'
+    TOTAL_MONTH = 'Итого за месяц'
 
 
 class CommandEnum(enum.Enum):
     NEW = 'new'
-    STATISTIC_MONTH = 'statistics_month'
+    HISTORY_MONTH = 'history_month'
     START = 'start'
     HELP = 'help'
     CANCEL = 'cancel'
@@ -78,7 +80,7 @@ HELP_COMMANDS = {
     f'/{CommandEnum.HELP.value}': AnswerEnum.HELP.value,
     f'/{CommandEnum.NEW.value}': AnswerEnum.NEW_ENTRY.value,
     f'/{CommandEnum.ADD_CATEGORY.value}': AnswerEnum.ADD_CATEGORY.value,
-    f'/{CommandEnum.STATISTIC_MONTH.value}': AnswerEnum.STATISTIC_MONTH.value,
+    f'/{CommandEnum.HISTORY_MONTH.value}': AnswerEnum.HISTORY_MONTH.value,
     f'/{CommandEnum.CANCEL.value}': AnswerEnum.CANCEL.value,
 
 }
@@ -90,7 +92,7 @@ START_COMMANDS = {
 
 MENU_COMMANDS = {
     f'/{CommandEnum.NEW.value}': AnswerEnum.NEW_ENTRY.value,
-    f'/{CommandEnum.STATISTIC_MONTH.value}': AnswerEnum.STATISTIC_MONTH.value,
+    f'/{CommandEnum.HISTORY_MONTH.value}': AnswerEnum.HISTORY_MONTH.value,
     f'/{CommandEnum.CANCEL.value}': AnswerEnum.CANCEL.value,
     f'/{CommandEnum.ADD_CATEGORY.value}': AnswerEnum.ADD_CATEGORY.value,
 }
