@@ -1,11 +1,11 @@
 from datetime import datetime
 from typing import List
 
-from sqlalchemy import extract, select
+from sqlalchemy import extract, select, func
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 
-from aiogram_modul.constants import CategoryIncomeEnum, CategoryExpenseList
+from aiogram_modul.constants import CategoryIncomeEnum, CategoryExpenseList, ChoiceDate
 from config import database_async_url
 from database.base_model import StatisticsBase
 
@@ -77,17 +77,35 @@ async def get_categories_by_user(session: AsyncSession, telegramm_id: int, expen
     return list(user_categories.scalars())
 
 
-async def get_history_month(session: AsyncSession, telegramm_id: int) -> List[StatisticsBase]:
+async def get_history_by_date(session: AsyncSession, telegramm_id: int, date: ChoiceDate) -> List[StatisticsBase]:
     user = await get_user_by_telegram_id(session, telegramm_id)
-    current_month = datetime.now().month
-    statistic_by_month = await session.execute(
+
+    history_by_month = await session.execute(
         select(Category.name, Budgeting.amount, Budgeting.created_date).join(Budgeting.category).where(
+            Category.is_expense == True,
             Budgeting.user_id == user.id,
-            extract('month', Budgeting.created_date) == current_month),
+            extract(date.value, Budgeting.created_date) == getattr(datetime.now(), date.value)),
     )
-    row_result = statistic_by_month.fetchall()
+    row_result = history_by_month.fetchall()
     result = [
         StatisticsBase(category_name=row[0], amount=row[1], date=row[2].strftime("%d-%m-%Y"))
+        for row in row_result
+    ]
+    return result
+
+
+async def get_statistics_by_date(session: AsyncSession, telegramm_id: int, date: ChoiceDate) -> List[StatisticsBase]:
+    user = await get_user_by_telegram_id(session, telegramm_id)
+
+    statistics_by_date = await session.execute(
+        select(Category.name, func.sum(Budgeting.amount)).join(Budgeting.category).where(
+            Category.is_expense == True,
+            Budgeting.user_id == user.id,
+            extract(date.value, Budgeting.created_date) == getattr(datetime.now(), date.value)).group_by(Category.name),
+    )
+    row_result = statistics_by_date.fetchall()
+    result = [
+        StatisticsBase(category_name=row[0], amount=row[1])
         for row in row_result
     ]
     return result
@@ -109,4 +127,4 @@ async def _init_insert_category(session: AsyncSession):
 async def check_db_exists():
     """When new db, run this function for feel data."""
     session = await create_async_database()
-    await get_statistic_month(session, 409501763)
+    await _init_insert_category(session)

@@ -4,22 +4,22 @@ from aiogram.types import ReplyKeyboardMarkup
 
 from aiogram_modul.constants import (
     BackEnum,
-    CategoryExpenseList,
-    CategoryIncomeEnum,
     IncomeExpenseEnum,
+    HistoryChoiceEnum,
+    StatisticsChoiceEnum,
 )
 
 income_and_expense_markup = ReplyKeyboardMarkup(
     resize_keyboard=True,
 ).add(*IncomeExpenseEnum.list_value()).row(BackEnum.BACK.value)
 
-category_income_markup = ReplyKeyboardMarkup(
+choice_variant_statistics = ReplyKeyboardMarkup(
     resize_keyboard=True,
-).add(*CategoryIncomeEnum.list_value()).row(BackEnum.BACK.value)
+).add(*StatisticsChoiceEnum.list_value()).row(BackEnum.BACK.value)
 
-category_expense_markup = ReplyKeyboardMarkup(
+choice_variant_history = ReplyKeyboardMarkup(
     resize_keyboard=True,
-).add(*CategoryExpenseList.list_value()).row(BackEnum.BACK.value)
+).add(*HistoryChoiceEnum.list_value()).row(BackEnum.BACK.value)
 
 back_keyboard_markup = ReplyKeyboardMarkup(
     resize_keyboard=True,

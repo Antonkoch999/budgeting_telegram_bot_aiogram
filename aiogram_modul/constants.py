@@ -9,6 +9,20 @@ class BaseEnum(enum.Enum):
         return [i.value for i in cls]
 
 
+class StatisticsChoiceEnum(BaseEnum):
+
+    STATISTICS_BY_DAY = 'Статистика за день'
+    STATISTICS_BY_MONTH = 'Статистика за месяц'
+    STATISTICS_BY_YEAR = 'Статистика за год'
+
+
+class HistoryChoiceEnum(BaseEnum):
+
+    HISTORY_BY_DAY = 'История за день'
+    HISTORY_BY_MONTH = 'История за месяц'
+    HISTORY_BY_YEAR = 'История за год'
+
+
 class IncomeExpenseEnum(BaseEnum):
 
     INCOME = 'Доход'
@@ -38,6 +52,12 @@ class CategoryExpenseList(BaseEnum):
     BEAUTY = 'Красота'
 
 
+class ChoiceDate(enum.Enum):
+    DAY = 'day'
+    MONTH = 'month'
+    YEAR = 'year'
+
+
 class AnswerEnum(enum.Enum):
     ANSWER_INCOME_EXPENSE = 'Вы хотите записать доход или расход?'
     CATEGORY_INCOME_EXPENSE = 'Вы хотите добавить категорию для дохода или расхода?'
@@ -59,20 +79,24 @@ class AnswerEnum(enum.Enum):
     NEW_ENTRY = 'Сделать новую запись'
     START = 'Начало работы с ботом'
     HELP = 'Просмотр меню'
-    HISTORY_MONTH = 'История за месяц'
+    HISTORY = 'История расходов'
+    CHOICE_VARIANT_HISTORY = 'Выберите какую историю хотите увидеть'
     CANCEL = 'Отменить действие'
     NEW_USER = 'Добро пожаловать, {username}!\n\n'
     ADD_CATEGORY = 'Добавить новую категорию.'
-    TOTAL_MONTH = 'Итого за месяц'
+    TOTAL = 'Итого'
+    CHOICE_VARIANT_STATISTICS = 'Выберите какую статистику хотите увидеть.'
+    STATISTICS = 'Статистика расходов'
 
 
 class CommandEnum(enum.Enum):
     NEW = 'new'
-    HISTORY_MONTH = 'history_month'
+    HISTORY = 'history'
     START = 'start'
     HELP = 'help'
     CANCEL = 'cancel'
     ADD_CATEGORY = 'add_category'
+    STATISTICS = 'statistics'
 
 
 HELP_COMMANDS = {
@@ -80,9 +104,9 @@ HELP_COMMANDS = {
     f'/{CommandEnum.HELP.value}': AnswerEnum.HELP.value,
     f'/{CommandEnum.NEW.value}': AnswerEnum.NEW_ENTRY.value,
     f'/{CommandEnum.ADD_CATEGORY.value}': AnswerEnum.ADD_CATEGORY.value,
-    f'/{CommandEnum.HISTORY_MONTH.value}': AnswerEnum.HISTORY_MONTH.value,
+    f'/{CommandEnum.HISTORY.value}': AnswerEnum.HISTORY.value,
     f'/{CommandEnum.CANCEL.value}': AnswerEnum.CANCEL.value,
-
+    f'/{CommandEnum.STATISTICS.value}': AnswerEnum.STATISTICS.value,
 }
 
 START_COMMANDS = {
@@ -92,7 +116,8 @@ START_COMMANDS = {
 
 MENU_COMMANDS = {
     f'/{CommandEnum.NEW.value}': AnswerEnum.NEW_ENTRY.value,
-    f'/{CommandEnum.HISTORY_MONTH.value}': AnswerEnum.HISTORY_MONTH.value,
+    f'/{CommandEnum.HISTORY.value}': AnswerEnum.HISTORY.value,
     f'/{CommandEnum.CANCEL.value}': AnswerEnum.CANCEL.value,
     f'/{CommandEnum.ADD_CATEGORY.value}': AnswerEnum.ADD_CATEGORY.value,
+    f'/{CommandEnum.STATISTICS.value}': AnswerEnum.STATISTICS.value,
 }
