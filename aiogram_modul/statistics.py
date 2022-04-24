@@ -58,7 +58,7 @@ async def history_choice(message: types.Message, state: FSMContext):
 
     table = prettytable.PrettyTable([AnswerEnum.DATE.value, AnswerEnum.CATEGORY.value, AnswerEnum.AMOUNT.value])
     for info in result:
-        table.add_row([info.date, info.category_name, info.amount])
+        table.add_row([info.date, info.category_name, round(float(info.amount), 2)])
 
     await message.answer(
         f'<pre>{table}</pre>',
@@ -94,9 +94,9 @@ async def statistics_choice(message: types.Message, state: FSMContext):
     total_amount = 0
     for info in result:
         total_amount += info.amount
-        table.add_row([info.category_name, info.amount])
+        table.add_row([info.category_name, round(float(info.amount), 2)])
     table.add_row(['-----------', '-------'])
-    table.add_row([AnswerEnum.TOTAL.value, total_amount])
+    table.add_row([AnswerEnum.TOTAL.value, round(float(total_amount), 2)])
 
     await message.answer(
         f'<pre>{table}</pre>',

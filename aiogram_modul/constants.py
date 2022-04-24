@@ -76,7 +76,7 @@ class AnswerEnum(enum.Enum):
     START_HEADER = 'Я бот бюджетирования как я могу тебе помочь?\n\n'
     HELP_HEADER = 'Доступны следующие команды: \n\n'
     CANCEL_MESSAGE = 'Действие отменено'
-    NEW_ENTRY = 'Сделать новую запись'
+    NEW_ENTRY = 'Добавить расход'
     START = 'Начало работы с ботом'
     HELP = 'Просмотр меню'
     HISTORY = 'История расходов'
