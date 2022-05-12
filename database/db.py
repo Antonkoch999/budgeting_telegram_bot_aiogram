@@ -1,11 +1,11 @@
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 
 from sqlalchemy import extract, select, func
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 
-from aiogram_modul.constants import CategoryIncomeEnum, CategoryExpenseList, ChoiceDate
+from aiogram_modul.constants import CategoryIncomeEnum, CategoryExpenseList, ChoiceDateType
 from config import database_async_url
 from database.base_model import StatisticsBase
 
@@ -77,7 +77,7 @@ async def get_categories_by_user(session: AsyncSession, telegramm_id: int, expen
     return list(user_categories.scalars())
 
 
-async def get_history_by_date(session: AsyncSession, telegramm_id: int, date: ChoiceDate) -> List[StatisticsBase]:
+async def get_history_by_date(session: AsyncSession, telegramm_id: int, date: ChoiceDateType) -> List[StatisticsBase]:
     user = await get_user_by_telegram_id(session, telegramm_id)
 
     history_by_month = await session.execute(
@@ -94,14 +94,28 @@ async def get_history_by_date(session: AsyncSession, telegramm_id: int, date: Ch
     return result
 
 
-async def get_statistics_by_date(session: AsyncSession, telegramm_id: int, date: ChoiceDate) -> List[StatisticsBase]:
+async def get_statistics_by_date(
+    session: AsyncSession,
+    telegramm_id: int,
+    date: ChoiceDateType,
+    value_date: Optional[int] = None,
+) -> List[StatisticsBase]:
+    """Get statistics on this year by value_date."""
     user = await get_user_by_telegram_id(session, telegramm_id)
+
+    if not value_date:
+        value_date = getattr(datetime.now(), date.value)
 
     statistics_by_date = await session.execute(
         select(Category.name, func.sum(Budgeting.amount)).join(Budgeting.category).where(
             Category.is_expense == True,
             Budgeting.user_id == user.id,
-            extract(date.value, Budgeting.created_date) == getattr(datetime.now(), date.value)).group_by(Category.name),
+            extract(date.value, Budgeting.created_date) == value_date,
+            extract(
+                ChoiceDateType.YEAR.value,
+                Budgeting.created_date,
+            ) == getattr(datetime.now(), ChoiceDateType.YEAR.value),
+        ).group_by(Category.name),
     )
     row_result = statistics_by_date.fetchall()
     result = [

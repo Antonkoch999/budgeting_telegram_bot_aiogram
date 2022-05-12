@@ -1,5 +1,6 @@
 """Constant."""
 import enum
+from aenum import MultiValueEnum
 
 
 class BaseEnum(enum.Enum):
@@ -14,6 +15,26 @@ class StatisticsChoiceEnum(BaseEnum):
     STATISTICS_BY_DAY = 'Статистика за день'
     STATISTICS_BY_MONTH = 'Статистика за месяц'
     STATISTICS_BY_YEAR = 'Статистика за год'
+
+
+class StatisticsChoiceMonthEnum(MultiValueEnum):
+
+    JANUARY = 'Январь', 1
+    FEBRUARY = 'Февраль', 2
+    MARCH = 'Март', 3
+    APRIL = 'Апрель', 4
+    MAY = 'Май', 5
+    JUNE = 'Июнь', 6
+    JULY = 'Июль', 7
+    AUGUST = 'Август', 8
+    SEPTEMBER = 'Сентябрь', 9
+    OCTOBER = 'Октябрь', 10
+    NOVEMBER = 'Ноябрь', 11
+    DECEMBER = 'Декабрь', 12
+
+    @classmethod
+    def list_value_name_month(cls):
+        return [i.value for i in cls]
 
 
 class HistoryChoiceEnum(BaseEnum):
@@ -52,7 +73,7 @@ class CategoryExpenseList(BaseEnum):
     BEAUTY = 'Красота'
 
 
-class ChoiceDate(enum.Enum):
+class ChoiceDateType(enum.Enum):
     DAY = 'day'
     MONTH = 'month'
     YEAR = 'year'
@@ -86,17 +107,18 @@ class AnswerEnum(enum.Enum):
     ADD_CATEGORY = 'Добавить новую категорию.'
     TOTAL = 'Итого'
     CHOICE_VARIANT_STATISTICS = 'Выберите какую статистику хотите увидеть.'
+    CHOICE_VARIANT_MONTH_STATISTICS = 'Выберите месяц.'
     STATISTICS = 'Статистика расходов'
 
 
 class CommandEnum(enum.Enum):
     NEW = 'new'
+    ADD_CATEGORY = 'add_category'
+    STATISTICS = 'statistics'
     HISTORY = 'history'
     START = 'start'
     HELP = 'help'
     CANCEL = 'cancel'
-    ADD_CATEGORY = 'add_category'
-    STATISTICS = 'statistics'
 
 
 HELP_COMMANDS = {
@@ -116,8 +138,8 @@ START_COMMANDS = {
 
 MENU_COMMANDS = {
     f'/{CommandEnum.NEW.value}': AnswerEnum.NEW_ENTRY.value,
-    f'/{CommandEnum.HISTORY.value}': AnswerEnum.HISTORY.value,
-    f'/{CommandEnum.CANCEL.value}': AnswerEnum.CANCEL.value,
     f'/{CommandEnum.ADD_CATEGORY.value}': AnswerEnum.ADD_CATEGORY.value,
     f'/{CommandEnum.STATISTICS.value}': AnswerEnum.STATISTICS.value,
+    f'/{CommandEnum.HISTORY.value}': AnswerEnum.HISTORY.value,
+    f'/{CommandEnum.CANCEL.value}': AnswerEnum.CANCEL.value,
 }

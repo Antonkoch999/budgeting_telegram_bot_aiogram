@@ -7,6 +7,7 @@ from aiogram_modul.constants import (
     IncomeExpenseEnum,
     HistoryChoiceEnum,
     StatisticsChoiceEnum,
+    StatisticsChoiceMonthEnum,
 )
 
 income_and_expense_markup = ReplyKeyboardMarkup(
@@ -16,6 +17,10 @@ income_and_expense_markup = ReplyKeyboardMarkup(
 choice_variant_statistics = ReplyKeyboardMarkup(
     resize_keyboard=True,
 ).add(*StatisticsChoiceEnum.list_value()).row(BackEnum.BACK.value)
+
+choice_variant_month_statistics = ReplyKeyboardMarkup(
+    resize_keyboard=True,
+).add(*StatisticsChoiceMonthEnum.list_value_name_month()).row(BackEnum.BACK.value)
 
 choice_variant_history = ReplyKeyboardMarkup(
     resize_keyboard=True,
