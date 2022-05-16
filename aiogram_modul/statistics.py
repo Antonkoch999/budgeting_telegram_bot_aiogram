@@ -75,7 +75,7 @@ def _prepare_table_for_statistics(result: List[StatisticsBase]):
     """Prepare table for answer."""
     table = prettytable.PrettyTable([AnswerEnum.CATEGORY.value, AnswerEnum.AMOUNT.value])
     total_amount = 0
-    for info in result:
+    for info in sorted(result, key=lambda category: category.amount, reverse=True):
         total_amount += info.amount
         table.add_row([info.category_name, round(float(info.amount), 2)])
     table.add_row(['-----------', '-------'])

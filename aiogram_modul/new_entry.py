@@ -11,12 +11,10 @@ from aiogram_modul.base_command import generate_start_text
 from aiogram_modul.constants import (
     AnswerEnum,
     BackEnum,
-    IncomeExpenseEnum,
 )
 from database.db import write_budgeting, get_categories_by_user
 from aiogram_modul.keyboard import (
     back_keyboard_markup,
-    income_and_expense_markup,
 )
 from aiogram_modul.help_functions import check_is_digit
 
