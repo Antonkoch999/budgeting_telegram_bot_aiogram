@@ -42,6 +42,7 @@ wcwidth = "0.2.5"
 yarl = "1.6.3"
 aenum = "^3.1.11"
 cryptography = "^37.0.2"
+alembic = "^1.7.7"
 
 [tool.poetry.dev-dependencies]
 
