@@ -14,7 +14,8 @@ from aiogram_modul.constants import (
     ChoiceDateType,
     CommandEnum,
     HistoryChoiceEnum,
-    StatisticsChoiceEnum, StatisticsChoiceMonthEnum,
+    StatisticsChoiceEnum,
+    StatisticsChoiceMonthEnum,
 )
 from aiogram_modul.keyboard import choice_variant_statistics, choice_variant_history, choice_variant_month_statistics
 from database.base_model import StatisticsBase

@@ -51,5 +51,5 @@ class Budgeting(Base):
     user_id = Column(Integer, ForeignKey('User.id'))
     user = relationship("User", back_populates="budgets")
 
-    amount = Column(Float)
+    amount = Column(String(500))
     created_date = Column(DateTime, default=datetime.datetime.utcnow)
