@@ -14,11 +14,11 @@ class EncodeDecodeService:
         self._key = key
 
     def encode_amount(self, amount: str) -> str:
-        """Return encoded password."""
+        """Return encoded amount."""
         cipher_suite = Fernet(self._key)
         return cipher_suite.encrypt(bytes(amount, self._encoding)).decode(self._encoding)
 
     def decode_amount(self, encoded_amount: str) -> str:
-        """Return decoded password."""
+        """Return decoded amount."""
         cipher_suite = Fernet(self._key)
         return cipher_suite.decrypt(bytes(encoded_amount, self._encoding)).decode(self._encoding)

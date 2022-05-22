@@ -1,11 +1,12 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import List
 
-from sqlalchemy import extract, select, func
+from sqlalchemy import extract, select
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 
 from aiogram_modul.constants import CategoryIncomeEnum, CategoryExpenseList, ChoiceDateType
+from aiogram_modul.crypto_graphy import EncodeDecodeService
 from config import database_async_url
 from database.base_model import StatisticsBase
 
@@ -56,7 +57,7 @@ async def get_user_by_telegram_id(session: AsyncSession, telegram_id: int):
     return user
 
 
-async def write_budgeting(session: AsyncSession, telegramm_id: int, category_name: str, amount: float):
+async def write_budgeting(session: AsyncSession, telegramm_id: int, category_name: str, amount: str):
     category_id = await get_category_id_by_name(session, category_name)
     user = await get_user_by_telegram_id(session, telegramm_id)
     session.add(Budgeting(amount=amount, user_id=user.id, category_id=category_id))
@@ -77,52 +78,107 @@ async def get_categories_by_user(session: AsyncSession, telegramm_id: int, expen
     return list(user_categories.scalars())
 
 
-async def get_history_by_date(session: AsyncSession, telegramm_id: int, date: ChoiceDateType) -> List[StatisticsBase]:
-    user = await get_user_by_telegram_id(session, telegramm_id)
+class GetBudgetingData:
 
-    history_by_month = await session.execute(
-        select(Category.name, Budgeting.amount, Budgeting.created_date).join(Budgeting.category).where(
-            Category.is_expense == True,
-            Budgeting.user_id == user.id,
-            extract(date.value, Budgeting.created_date) == getattr(datetime.now(), date.value)),
-    )
-    row_result = history_by_month.fetchall()
-    result = [
-        StatisticsBase(category_name=row[0], amount=row[1], date=row[2].strftime("%d-%m-%Y"))
-        for row in row_result
-    ]
-    return result
+    async def get_data_budgeting_by_day(
+        self,
+        session: AsyncSession,
+        telegramm_id: int,
+    ) -> List[StatisticsBase]:
+        """Get data budgeting for the day."""
+        user = await get_user_by_telegram_id(session, telegramm_id)
 
+        year = ChoiceDateType.YEAR.value
+        month = ChoiceDateType.MONTH.value
+        day = ChoiceDateType.DAY.value
 
-async def get_statistics_by_date(
-    session: AsyncSession,
-    telegramm_id: int,
-    date: ChoiceDateType,
-    value_date: Optional[int] = None,
-) -> List[StatisticsBase]:
-    """Get statistics on this year by value_date."""
-    user = await get_user_by_telegram_id(session, telegramm_id)
-
-    if not value_date:
-        value_date = getattr(datetime.now(), date.value)
-
-    statistics_by_date = await session.execute(
-        select(Category.name, func.sum(Budgeting.amount)).join(Budgeting.category).where(
-            Category.is_expense == True,
-            Budgeting.user_id == user.id,
-            extract(date.value, Budgeting.created_date) == value_date,
-            extract(
-                ChoiceDateType.YEAR.value,
+        statistics_by_day = await session.execute(
+            select(
+                Category.name,
+                Budgeting.amount,
                 Budgeting.created_date,
-            ) == getattr(datetime.now(), ChoiceDateType.YEAR.value),
-        ).group_by(Category.name),
-    )
-    row_result = statistics_by_date.fetchall()
-    result = [
-        StatisticsBase(category_name=row[0], amount=row[1])
-        for row in row_result
-    ]
-    return result
+            ).join(
+                Budgeting.category,
+            ).where(
+                Category.is_expense == True,
+                Budgeting.user_id == user.id,
+                extract(year, Budgeting.created_date) == getattr(datetime.now(), year),
+                extract(month, Budgeting.created_date) == getattr(datetime.now(), month),
+                extract(day, Budgeting.created_date) == getattr(datetime.now(), day),
+            ),
+        )
+        row_result = statistics_by_day.fetchall()
+        result = [
+            StatisticsBase(category_name=row[0], amount=self._decode_amount(row[1]), date=row[2].strftime("%d-%m-%Y"))
+            for row in row_result
+        ]
+        return result
+
+    async def get_data_budgeting_by_month(
+        self,
+        session: AsyncSession,
+        telegramm_id: int,
+    ) -> List[StatisticsBase]:
+        """Get data budgeting for the month."""
+        user = await get_user_by_telegram_id(session, telegramm_id)
+
+        year = ChoiceDateType.YEAR.value
+        month = ChoiceDateType.MONTH.value
+
+        statistics_by_day = await session.execute(
+            select(
+                Category.name,
+                Budgeting.amount,
+                Budgeting.created_date,
+            ).join(
+                Budgeting.category,
+            ).where(
+                Category.is_expense == True,
+                Budgeting.user_id == user.id,
+                extract(year, Budgeting.created_date) == getattr(datetime.now(), year),
+                extract(month, Budgeting.created_date) == getattr(datetime.now(), month),
+            ),
+        )
+        row_result = statistics_by_day.fetchall()
+        result = [
+            StatisticsBase(category_name=row[0], amount=self._decode_amount(row[1]), date=row[2].strftime("%d-%m-%Y"))
+            for row in row_result
+        ]
+        return result
+
+    async def get_data_budgeting_by_year(
+        self,
+        session: AsyncSession,
+        telegramm_id: int,
+    ) -> List[StatisticsBase]:
+        """Get data budgeting for the year."""
+        user = await get_user_by_telegram_id(session, telegramm_id)
+
+        year = ChoiceDateType.YEAR.value
+
+        statistics_by_day = await session.execute(
+            select(
+                Category.name,
+                Budgeting.amount,
+                Budgeting.created_date,
+            ).join(
+                Budgeting.category,
+            ).where(
+                Category.is_expense == True,
+                Budgeting.user_id == user.id,
+                extract(year, Budgeting.created_date) == getattr(datetime.now(), year),
+            ),
+        )
+        row_result = statistics_by_day.fetchall()
+        result = [
+            StatisticsBase(category_name=row[0], amount=self._decode_amount(row[1]), date=row[2].strftime("%d-%m-%Y"))
+            for row in row_result
+        ]
+        return result
+
+    @staticmethod
+    def _decode_amount(encode_amount: str) -> float:
+        return float(EncodeDecodeService().decode_amount(encode_amount))
 
 
 async def _init_insert_category(session: AsyncSession):

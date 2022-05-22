@@ -15,6 +15,7 @@ class StatisticsChoiceEnum(BaseEnum):
     STATISTICS_BY_DAY = 'Статистика за день'
     STATISTICS_BY_MONTH = 'Статистика за месяц'
     STATISTICS_BY_YEAR = 'Статистика за год'
+    STATISTICS_BY_PERIOD = 'Статистика за период'
 
 
 class StatisticsChoiceMonthEnum(MultiValueEnum):
@@ -42,6 +43,7 @@ class HistoryChoiceEnum(BaseEnum):
     HISTORY_BY_DAY = 'История за день'
     HISTORY_BY_MONTH = 'История за месяц'
     HISTORY_BY_YEAR = 'История за год'
+    HISTORY_BY_PERIOD = 'История за период'
 
 
 class IncomeExpenseEnum(BaseEnum):
@@ -107,7 +109,7 @@ class AnswerEnum(enum.Enum):
     ADD_CATEGORY = 'Добавить новую категорию.'
     TOTAL = 'Итого'
     CHOICE_VARIANT_STATISTICS = 'Выберите какую статистику хотите увидеть.'
-    CHOICE_VARIANT_MONTH_STATISTICS = 'Выберите месяц.'
+    CHOICE_PERIOD = 'Введите период в формате: 21.12.2021-30.12.2021'
     STATISTICS = 'Статистика расходов'
 
 

@@ -7,6 +7,7 @@ from aiogram.types import BotCommand
 from aiogram.utils import executor
 
 from aiogram_modul.constants import MENU_COMMANDS
+from aiogram_modul.history import register_handlers_history
 from aiogram_modul.new_category import register_handlers_new_category
 from config import bot_token
 from database.db import create_async_database
@@ -48,6 +49,7 @@ if __name__ == '__main__':
     register_handlers_new_entry(dp)
     register_handlers_common(dp)
     register_handlers_statistics(dp)
+    register_handlers_history(dp)
     register_handlers_new_category(dp)
 
     executor.start_polling(dp, skip_updates=True, on_startup=on_startup, on_shutdown=on_shutdown)

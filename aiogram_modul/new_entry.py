@@ -12,6 +12,7 @@ from aiogram_modul.constants import (
     AnswerEnum,
     BackEnum,
 )
+from aiogram_modul.crypto_graphy import EncodeDecodeService
 from database.db import write_budgeting, get_categories_by_user
 from aiogram_modul.keyboard import (
     back_keyboard_markup,
@@ -79,11 +80,10 @@ async def enter_amount_income_or_expense(message: types.Message, state: FSMConte
     async with state.proxy() as data:
         summa_is_number = check_is_digit(message.text.replace(',', '.'))
         if summa_is_number:
-            data['amount'] = summa_is_number
             username = message.from_user.username
             category_expense_name = data['category_expense']
-            amount_for_db = data['amount']
-            await write_budgeting(message.bot['session'], message['from']['id'], category_expense_name, amount_for_db)
+            amount = EncodeDecodeService().encode_amount(str(summa_is_number))
+            await write_budgeting(message.bot['session'], message['from']['id'], category_expense_name, amount)
             await message.answer(
                 markdown.text(
                     markdown.text(markdown.hitalic(AnswerEnum.DATA_RECORDED.value)),
@@ -94,7 +94,7 @@ async def enter_amount_income_or_expense(message: types.Message, state: FSMConte
                     markdown.text(f"{AnswerEnum.CATEGORY.value} {category_expense_name}"),
                     markdown.text(
                         AnswerEnum.AMOUNT.value,
-                        markdown.hbold(f'{amount_for_db}'),
+                        markdown.hbold(str(summa_is_number)),
                         AnswerEnum.BYN.value,
                     ),
                     sep="\n",
