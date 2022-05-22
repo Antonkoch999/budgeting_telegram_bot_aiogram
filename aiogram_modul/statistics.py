@@ -34,7 +34,7 @@ def _prepare_table_for_statistics(result: List[StatisticsBase]):
     total_amount = 0
     for info in sorted(result, key=lambda category: category.amount, reverse=True):
         total_amount += info.amount
-        table.add_row([info.category_name, info.amount])
+        table.add_row([info.category_name, round(float(info.amount), 2)])
     table.add_row(['-----------', '-------'])
     table.add_row([AnswerEnum.TOTAL.value, round(float(total_amount), 2)])
     return table
