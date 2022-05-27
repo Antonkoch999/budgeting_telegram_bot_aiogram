@@ -27,7 +27,7 @@ def upgrade():
     connection = op.get_bind()
     results = connection.execute('SELECT id, amount FROM "Budgeting"').fetchall()
     for pk, amount in results:
-        encode_amount = EncodeDecodeService().encode_amount(str(amount))
+        encode_amount = EncodeDecodeService().encode(str(amount))
         query_sql = f"""UPDATE "Budgeting" SET amount = '{encode_amount}' WHERE id = {pk}"""
         connection.execute(query_sql)
 
@@ -39,8 +39,8 @@ def downgrade():
     connection = op.get_bind()
     results = connection.execute('SELECT id, amount FROM "Budgeting"').fetchall()
     for pk, amount in results:
-        encode_amount = EncodeDecodeService().decode_amount(str(amount))
-        query_sql = f"""UPDATE "Budgeting" SET amount = '{encode_amount}' WHERE id = {pk}"""
+        decode_amount = EncodeDecodeService().decode(str(amount))
+        query_sql = f"""UPDATE "Budgeting" SET amount = '{decode_amount}' WHERE id = {pk}"""
         connection.execute(query_sql)
 
     op.execute('ALTER TABLE "Budgeting" ALTER COLUMN amount TYPE double precision USING amount::double precision')

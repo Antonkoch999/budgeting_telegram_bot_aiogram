@@ -82,7 +82,7 @@ async def enter_amount_income_or_expense(message: types.Message, state: FSMConte
         if summa_is_number:
             username = message.from_user.username
             category_expense_name = data['category_expense']
-            amount = EncodeDecodeService().encode_amount(str(summa_is_number))
+            amount = EncodeDecodeService().encode(str(summa_is_number))
             await write_budgeting(message.bot['session'], message['from']['id'], category_expense_name, amount)
             await message.answer(
                 markdown.text(

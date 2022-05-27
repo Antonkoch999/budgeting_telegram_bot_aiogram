@@ -13,12 +13,12 @@ class EncodeDecodeService:
     def __init__(self, key: Union[bytes, str] = encoding_key):
         self._key = key
 
-    def encode_amount(self, amount: str) -> str:
-        """Return encoded amount."""
+    def encode(self, value: str) -> str:
+        """Return encoded value."""
         cipher_suite = Fernet(self._key)
-        return cipher_suite.encrypt(bytes(amount, self._encoding)).decode(self._encoding)
+        return cipher_suite.encrypt(bytes(value, self._encoding)).decode(self._encoding)
 
-    def decode_amount(self, encoded_amount: str) -> str:
-        """Return decoded amount."""
+    def decode(self, encode_value: str) -> str:
+        """Return decoded value."""
         cipher_suite = Fernet(self._key)
-        return cipher_suite.decrypt(bytes(encoded_amount, self._encoding)).decode(self._encoding)
+        return cipher_suite.decrypt(bytes(encode_value, self._encoding)).decode(self._encoding)

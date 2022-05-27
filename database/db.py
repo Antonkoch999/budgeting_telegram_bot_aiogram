@@ -105,6 +105,8 @@ class GetBudgetingData:
                 extract(year, Budgeting.created_date) == getattr(datetime.now(), year),
                 extract(month, Budgeting.created_date) == getattr(datetime.now(), month),
                 extract(day, Budgeting.created_date) == getattr(datetime.now(), day),
+            ).order_by(
+                Budgeting.created_date,
             ),
         )
         row_result = statistics_by_day.fetchall()
@@ -137,6 +139,8 @@ class GetBudgetingData:
                 Budgeting.user_id == user.id,
                 extract(year, Budgeting.created_date) == getattr(datetime.now(), year),
                 extract(month, Budgeting.created_date) == getattr(datetime.now(), month),
+            ).order_by(
+                Budgeting.created_date,
             ),
         )
         row_result = statistics_by_day.fetchall()
@@ -167,6 +171,8 @@ class GetBudgetingData:
                 Category.is_expense == True,
                 Budgeting.user_id == user.id,
                 extract(year, Budgeting.created_date) == getattr(datetime.now(), year),
+            ).order_by(
+                Budgeting.created_date,
             ),
         )
         row_result = statistics_by_day.fetchall()
@@ -178,7 +184,7 @@ class GetBudgetingData:
 
     @staticmethod
     def _decode_amount(encode_amount: str) -> float:
-        return float(EncodeDecodeService().decode_amount(encode_amount))
+        return float(EncodeDecodeService().decode(encode_amount))
 
 
 async def _init_insert_category(session: AsyncSession):
