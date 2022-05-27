@@ -73,9 +73,18 @@ async def write_new_category(session: AsyncSession, telegramm_id: int, category_
 async def get_categories_by_user(session: AsyncSession, telegramm_id: int, expense: bool) -> List[str]:
     user = await get_user_by_telegram_id(session, telegramm_id)
     user_categories = await session.execute(
-        select(Category.name).join(Category.users).filter(User.id == user.id, Category.is_expense == expense)
+        select(
+            Category.name,
+        ).join(
+            Category.users,
+        ).filter(
+            User.id == user.id,
+            Category.is_expense == expense,
+        ),
     )
-    return list(user_categories.scalars())
+    row_result = user_categories.fetchall()
+
+    return [EncodeDecodeService().decode(encode_name[0]) for encode_name in row_result]
 
 
 class GetBudgetingData:
