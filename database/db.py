@@ -83,10 +83,10 @@ class GetBudgetingData:
     async def get_data_budgeting_by_day(
         self,
         session: AsyncSession,
-        telegramm_id: int,
+        telegram_id: int,
     ) -> List[StatisticsBase]:
         """Get data budgeting for the day."""
-        user = await get_user_by_telegram_id(session, telegramm_id)
+        user = await get_user_by_telegram_id(session, telegram_id)
 
         year = ChoiceDateType.YEAR.value
         month = ChoiceDateType.MONTH.value
@@ -111,7 +111,7 @@ class GetBudgetingData:
         )
         row_result = statistics_by_day.fetchall()
         result = [
-            StatisticsBase(category_name=row[0], amount=self._decode_amount(row[1]), date=row[2].strftime("%d-%m-%Y"))
+            StatisticsBase(category_name=self._decode_category_name(row[0]), amount=self._decode_amount(row[1]), date=row[2].strftime("%d-%m-%Y"))
             for row in row_result
         ]
         return result
@@ -119,10 +119,10 @@ class GetBudgetingData:
     async def get_data_budgeting_by_month(
         self,
         session: AsyncSession,
-        telegramm_id: int,
+        telegram_id: int,
     ) -> List[StatisticsBase]:
         """Get data budgeting for the month."""
-        user = await get_user_by_telegram_id(session, telegramm_id)
+        user = await get_user_by_telegram_id(session, telegram_id)
 
         year = ChoiceDateType.YEAR.value
         month = ChoiceDateType.MONTH.value
@@ -145,7 +145,7 @@ class GetBudgetingData:
         )
         row_result = statistics_by_day.fetchall()
         result = [
-            StatisticsBase(category_name=row[0], amount=self._decode_amount(row[1]), date=row[2].strftime("%d-%m-%Y"))
+            StatisticsBase(category_name=self._decode_category_name(row[0]), amount=self._decode_amount(row[1]), date=row[2].strftime("%d-%m-%Y"))
             for row in row_result
         ]
         return result
@@ -153,10 +153,10 @@ class GetBudgetingData:
     async def get_data_budgeting_by_year(
         self,
         session: AsyncSession,
-        telegramm_id: int,
+        telegram_id: int,
     ) -> List[StatisticsBase]:
         """Get data budgeting for the year."""
-        user = await get_user_by_telegram_id(session, telegramm_id)
+        user = await get_user_by_telegram_id(session, telegram_id)
 
         year = ChoiceDateType.YEAR.value
 
@@ -177,7 +177,7 @@ class GetBudgetingData:
         )
         row_result = statistics_by_day.fetchall()
         result = [
-            StatisticsBase(category_name=row[0], amount=self._decode_amount(row[1]), date=row[2].strftime("%d-%m-%Y"))
+            StatisticsBase(category_name=self._decode_category_name(row[0]), amount=self._decode_amount(row[1]), date=row[2].strftime("%d-%m-%Y"))
             for row in row_result
         ]
         return result
@@ -185,6 +185,10 @@ class GetBudgetingData:
     @staticmethod
     def _decode_amount(encode_amount: str) -> float:
         return float(EncodeDecodeService().decode(encode_amount))
+
+    @staticmethod
+    def _decode_category_name(encode_name: str) -> str:
+        return EncodeDecodeService().decode(encode_name)
 
 
 async def _init_insert_category(session: AsyncSession):
