@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List
+from typing import Dict, List
 
 from sqlalchemy import extract, select
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
@@ -27,13 +27,6 @@ async def create_async_database():
         return session
 
 
-async def get_category_id_by_name(session: AsyncSession, category_name: str) -> int:
-    categories = await session.execute(select(Category).where(Category.name == category_name))
-    category = categories.scalars().first()
-
-    return category.id
-
-
 async def get_all_user_telegram_id(session: AsyncSession) -> list:
     result = await session.execute(select(User))
     return [user.telegram_id for user in result.scalars()]
@@ -57,9 +50,8 @@ async def get_user_by_telegram_id(session: AsyncSession, telegram_id: int):
     return user
 
 
-async def write_budgeting(session: AsyncSession, telegramm_id: int, category_name: str, amount: str):
-    category_id = await get_category_id_by_name(session, category_name)
-    user = await get_user_by_telegram_id(session, telegramm_id)
+async def write_budgeting(session: AsyncSession, telegram_id: int, category_id: int, amount: str):
+    user = await get_user_by_telegram_id(session, telegram_id)
     session.add(Budgeting(amount=amount, user_id=user.id, category_id=category_id))
     await session.commit()
 
@@ -70,10 +62,11 @@ async def write_new_category(session: AsyncSession, telegramm_id: int, category_
     await session.commit()
 
 
-async def get_categories_by_user(session: AsyncSession, telegramm_id: int, expense: bool) -> List[str]:
-    user = await get_user_by_telegram_id(session, telegramm_id)
+async def get_categories_by_user(session: AsyncSession, telegram_id: int, expense: bool) -> Dict[str, int]:
+    user = await get_user_by_telegram_id(session, telegram_id)
     user_categories = await session.execute(
         select(
+            Category.id,
             Category.name,
         ).join(
             Category.users,
@@ -84,7 +77,7 @@ async def get_categories_by_user(session: AsyncSession, telegramm_id: int, expen
     )
     row_result = user_categories.fetchall()
 
-    return [EncodeDecodeService().decode(encode_name[0]) for encode_name in row_result]
+    return {EncodeDecodeService().decode(row[1]): row[0] for row in row_result}
 
 
 class GetBudgetingData:

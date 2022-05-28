@@ -12,10 +12,12 @@ from aiogram_modul.constants import (
     BackEnum,
     HistoryChoiceEnum, CommandEnum,
 )
+from aiogram_modul.help_functions import chunks
 from aiogram_modul.keyboard import choice_variant_history, back_keyboard_markup
 from database.db import GetBudgetingData
 
 logger = logging.getLogger(__name__)
+MAX_SIZE_MESSAGE = 50
 
 
 class HistoryState(StatesGroup):
@@ -41,13 +43,10 @@ async def history_choice(message: types.Message, state: FSMContext):
         await message.answer(generate_start_text(), reply_markup=types.ReplyKeyboardRemove())
         return
     elif message.text == HistoryChoiceEnum.HISTORY_BY_DAY.value:
-        await state.finish()
         result = await budgeting_data.get_data_budgeting_by_day(message.bot['session'], message['from']['id'])
     elif message.text == HistoryChoiceEnum.HISTORY_BY_MONTH.value:
-        await state.finish()
         result = await budgeting_data.get_data_budgeting_by_month(message.bot['session'], message['from']['id'])
     elif message.text == HistoryChoiceEnum.HISTORY_BY_YEAR.value:
-        await state.finish()
         result = await budgeting_data.get_data_budgeting_by_year(message.bot['session'], message['from']['id'])
     elif message.text == HistoryChoiceEnum.HISTORY_BY_PERIOD.value:
         await HistoryState.history_choice_period.set()
@@ -58,11 +57,23 @@ async def history_choice(message: types.Message, state: FSMContext):
     for info in result:
         table.add_row([info.date, info.category_name, info.amount])
 
-    await message.answer(
-        f'<pre>{table}</pre>',
-        parse_mode='HTML',
-        reply_markup=types.ReplyKeyboardRemove(),
-    )
+    if len(result) > MAX_SIZE_MESSAGE:
+        for chunk_list in chunks(result, MAX_SIZE_MESSAGE):
+            table = prettytable.PrettyTable([AnswerEnum.DATE.value, AnswerEnum.CATEGORY.value, AnswerEnum.AMOUNT.value])
+            for info in chunk_list:
+                table.add_row([info.date, info.category_name, info.amount])
+            await message.answer(
+                f'<pre>{table}</pre>',
+                parse_mode='HTML',
+                reply_markup=types.ReplyKeyboardRemove(),
+            )
+    else:
+        await message.answer(
+            f'<pre>{table}</pre>',
+            parse_mode='HTML',
+            reply_markup=types.ReplyKeyboardRemove(),
+        )
+    await state.finish()
 
 
 async def history_by_period(message: types.Message, state: FSMContext):
